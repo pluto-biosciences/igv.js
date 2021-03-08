@@ -187,6 +187,7 @@ class BamIndex {
                 }
             }
 
+           // return chunks;
             return optimizeChunks(chunks, lowest);
         }
     }
@@ -208,28 +209,29 @@ function optimizeChunks(chunks, lowest) {
         }
     });
 
-    chunks.forEach(function (chunk) {
+    // chunks.forEach(function (chunk) {
+    //
+    //     if (!lowest || chunk.maxv.isGreaterThan(lowest)) {
+    //         if (lastChunk === null) {
+    //             mergedChunks.push(chunk);
+    //             lastChunk = chunk;
+    //         } else {
+    //             if (canMerge(lastChunk, chunk)) {
+    //                 if (chunk.maxv.isGreaterThan(lastChunk.maxv)) {
+    //                     lastChunk.maxv = chunk.maxv;
+    //                 }
+    //             } else {
+    //                 mergedChunks.push(chunk);
+    //                 lastChunk = chunk;
+    //             }
+    //         }
+    //     } else {
+    //         //console.log(`skipping chunk ${chunk.minv.block} - ${chunk.maxv.block}`)
+    //     }
+    // });
 
-        if (!lowest || chunk.maxv.isGreaterThan(lowest)) {
-            if (lastChunk === null) {
-                mergedChunks.push(chunk);
-                lastChunk = chunk;
-            } else {
-                if (canMerge(lastChunk, chunk)) {
-                    if (chunk.maxv.isGreaterThan(lastChunk.maxv)) {
-                        lastChunk.maxv = chunk.maxv;
-                    }
-                } else {
-                    mergedChunks.push(chunk);
-                    lastChunk = chunk;
-                }
-            }
-        } else {
-            //console.log(`skipping chunk ${chunk.minv.block} - ${chunk.maxv.block}`)
-        }
-    });
-
-    return mergedChunks;
+    return chunks;
+    //return mergedChunks;
 }
 
 function canMerge(chunk1, chunk2) {
