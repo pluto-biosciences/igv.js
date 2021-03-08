@@ -210,7 +210,7 @@ function optimizeChunks(chunks, lowest) {
 
     chunks.forEach(function (chunk) {
 
-        if (!lowest || chunk.maxv.isGreaterThan(lowest)) {
+        //if (!lowest || chunk.maxv.isGreaterThan(lowest)) {
             if (lastChunk === null) {
                 mergedChunks.push(chunk);
                 lastChunk = chunk;
@@ -224,9 +224,9 @@ function optimizeChunks(chunks, lowest) {
                     lastChunk = chunk;
                 }
             }
-        } else {
-            //console.log(`skipping chunk ${chunk.minv.block} - ${chunk.maxv.block}`)
-        }
+        // } else {
+        //     //console.log(`skipping chunk ${chunk.minv.block} - ${chunk.maxv.block}`)
+        // }
     });
 
     return mergedChunks;
