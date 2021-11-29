@@ -226,11 +226,21 @@ class TrackView {
                 {
                     color: color => {
                         this.track.color = color
-                        this.repaintViews()
+                        this.repaintViews();
+                        if(this.track.eventHandlers && this.track.eventHandlers.has("setColor")) {
+                            for(let handler of this.track.eventHandlers.get("setColor")) {
+                                handler(color);
+                            }
+                        }
                     },
                     altColor: color => {
                         this.track.altColor = color
                         this.repaintViews()
+                        if(this.track.eventHandlers && this.track.eventHandlers.has("setAltColor")) {
+                            for(let handler of this.track.eventHandlers.get("setAltColor")) {
+                                handler(color);
+                            }
+                        }
                     }
 
                 }

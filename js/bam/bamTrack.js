@@ -117,6 +117,12 @@ class BAMTrack extends TrackBase {
                 }
             }
         }
+
+        if (this.eventHandlers && this.eventHandlers.has("sort")) {
+            for (let handler of this.eventHandlers.get(sort)) {
+                handler({action: "sort", options: options})
+            }
+        }
     }
 
     /**
@@ -446,39 +452,57 @@ class BAMTrack extends TrackBase {
         const $e = $(createCheckbox(menuItem.label, showCheck))
         const clickHandler = (ev) => {
 
-            if (menuItem.key === this.alignmentTrack.colorBy) {
-                this.alignmentTrack.colorBy = 'none'
-                this.config.colorBy = 'none'
-                this.trackView.repaintViews()
+            let options = {}
 
-            } else if ('tag' === menuItem.key) {
+            if ('tag' === menuItem.key) {
                 this.browser.inputDialog.present({
                     label: 'Tag Name',
                     value: this.alignmentTrack.colorByTag ? this.alignmentTrack.colorByTag : '',
                     callback: (tag) => {
-                        this.alignmentTrack.colorBy = 'tag'
-                        this.config.colorBy = 'tag'
-
-                        if (tag !== this.alignmentTrack.colorByTag) {
-                            this.alignmentTrack.colorByTag = tag
-                            this.config.colorByTag = tag
-                            this.alignmentTrack.tagColors = new PaletteColorTable("Set1")
-                            $('#color-by-tag').text(self.alignmentTrack.colorByTag)
+                        if (tag) {
+                            options.colorBy = 'tag'
+                            options.colorByTag = tag
+                            if (!this.alignmentTrack.tagColors) {
+                                this.alignmentTrack.tagColors = new PaletteColorTable("Set1")
+                            }
+                        } else {
+                            options.colorBy = 'none'
+                            options.colorByTag = ''
                         }
-
-                        this.trackView.repaintViews()
+                        this.doColorBy(options)
+                        if (this.eventHandlers && this.eventHandlers.has("colorBy")) {
+                            for (let handler of this.eventHandlers.get("colorBy")) {
+                                handler(options)
+                            }
+                        }
                     }
                 }, ev)
 
-            } else {
-                this.alignmentTrack.colorBy = menuItem.key
-                this.config.colorBy = menuItem.key
-                this.trackView.repaintViews()
+            } else {   // menuItem.key is not 'tag'
+                if (menuItem.key === this.alignmentTrack.colorBy) {
+                    options.colorBy = 'none'
+                } else if ('tag' !== menuItem.key) {
+                    options.colorBy = menuItem.key
+                }
+                this.doColorBy(options)
+                if (this.eventHandlers && this.eventHandlers.has("colorBy")) {
+                    for (let handler of this.eventHandlers.get("colorBy")) {
+                        handler(options)
+                    }
+                }
             }
-
         }
 
         return {name: undefined, object: $e, click: clickHandler, init: undefined}
+    }
+
+    doColorBy(options) {
+
+        this.alignmentTrack.colorBy = options.colorBy || 'none'
+        if (options.colorByTag) {
+            this.alignmentTrack.colorByTag = options.colorByTag
+        }
+        this.trackView.repaintViews()
     }
 
     /**
@@ -1137,6 +1161,15 @@ class AlignmentTrack {
             this.parent.sortObject = newSortObject
             sortAlignmentRows(newSortObject, viewport.getCachedFeatures())
             viewport.repaint()
+
+            if (this.parent.eventHandlers && this.parent.eventHandlers.has("sort")) {
+                for (let handler of this.parent.eventHandlers.get("sort")) {
+                    const sortObject = Object.assign({}, newSortObject)
+                    sortObject.position++;   // 1 vs 0 based convention
+                    handler(sortObject)
+                }
+            }
+
         }
         list.push('<b>Sort by...</b>')
         list.push({label: '&nbsp; base', click: () => sortByOption("BASE")})

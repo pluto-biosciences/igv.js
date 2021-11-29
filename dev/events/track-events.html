@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <title>Track Events</title>
+
+</head>
+
+<body>
+
+<h1>Example of using track events</h1>
+
+<div id="b1"></div>
+<div id="b2"></div>
+
+<script type="module">
+
+    import igv from "../../js/index.js"
+
+    const options =
+        {
+            genome: "hg19",
+            locus: "chr8:128,750,475-128,750,624",
+            tracks: [{
+                "sourceType": "gcs",
+                "type": "alignment",
+                "url": "gs://genomics-public-data/platinum-genomes/bam/NA12877_S1.bam",
+                "indexURL": "gs://genomics-public-data/platinum-genomes/bam/NA12877_S1.bam.bai",
+                "name": "NA12877",
+                "height": 250
+            }]
+        }
+
+    const browser1 = await igv.createBrowser(document.getElementById("b1"), options)
+    const browser2 = await igv.createBrowser(document.getElementById("b2"), options)
+
+    // Attach events to track
+    const track1 = browser1.findTracks("name", "NA12877")[0];
+    const track2 = browser2.findTracks("name", "NA12877")[0];
+
+    for(let action of ["setColor", "colorBy", "sort"]) {
+        track1.onAction(action, (options => track2.doAction(action, options)))
+        track2.onAction(action, (options => track1.doAction(action, options)))
+    }
+
+
+</script>
+
+</body>
+
+</html>
