@@ -119,7 +119,7 @@ class BAMTrack extends TrackBase {
         }
 
         if (this.eventHandlers && this.eventHandlers.has("sort")) {
-            for (let handler of this.eventHandlers.get(sort)) {
+            for (let handler of this.eventHandlers.get("sort")) {
                 handler({action: "sort", options: options})
             }
         }
